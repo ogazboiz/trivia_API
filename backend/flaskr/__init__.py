@@ -103,7 +103,7 @@ def create_app(test_config=None):
     selection = Question.query.all()
     current_question = paginate_questions(request, selection)
     all_question = Category.query.all()
-    category = {question.id:question.type for question in all_question} # only this worked
+    category = {question.id:question.type for question in all_question} 
     if len(current_question) == 0:
       abort(404)
 
@@ -112,7 +112,7 @@ def create_app(test_config=None):
       'questions': current_question,
       'total_questions': len(selection),
       'categories':category,
-      'current_category':None # i have no idea what you mean about that ?
+      'current_category':None 
     })
 
 
