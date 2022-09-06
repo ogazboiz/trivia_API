@@ -21,7 +21,6 @@ def paginate_questions(request, selection):
 
         return current_questions
 PATH ='postgresql://postgres:ogazboiz@localhost:5432/trivia'
-
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
@@ -228,11 +227,11 @@ def create_app(test_config=None):
     # })
     try:
       selection = Question.query.filter(Question.category == str(id)).all()
-      cats = [question.format() for question in selection]
+      categorizes_format = [question.format() for question in selection]
       
       return jsonify({
         'success': True,
-        'questions':cats,
+        'questions':categorizes_format,
         'total_questions': len(selection),
         'current_category':id
       })
