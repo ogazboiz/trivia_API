@@ -254,28 +254,88 @@ def create_app(test_config=None):
   '''
   @app.route('/quizzes', methods=['POST'])
   def get_random_quiz_question():
-    body = request.get_json()
-    previous_question = body['previous_questions']
-    category_id = body['quiz_category']['id']
-    if (not 'quiz_category' in body and not 'previous_questions' in body):
-        abort(422)  
-    questions = None
+      """
+      @TODO:
+      Create a POST endpoint to get questions to play the quiz.
+      This endpoint should take category and previous question parameters
+      and return a random questions within the given category,
+      if provided, and that is not one of the previous questions.
 
-    if category_id:
-      questions = Question.query.order_by(Question.id).all()
-    else:
-      questions = Question.query.filter(Question.category == category_id).order_by(Question.id).all()
-    question = None
-    if len(questions) == 0:
-      abort(404)
-    else:
-      index = len(previous_question)
-      if index < len(questions):
-        question = questions[index].format()
-    return jsonify({
-      "question" : question
-    })
+      TEST: In the "Play" tab, after a user selects "All" or a category,
+      one question at a time is displayed, the user is allowed to answer
+      and shown whether they were correct or not.
+      """
+      try:
+          # get value from the user
+          quiz_category = request.get_json().get(
+            'quiz_category', None)['type']
+          previous_questions = request.get_json().get('previous_questions')
+          if len(previous_questions) == 5:
+              return jsonify({
+                  'success': True,
+                  'question': False
+              })
+          questions = []
+          if quiz_category == 'click' or quiz_category is None:
+              questions = Question.query.order_by(Question.id).all()
+          else:
+              collection = Category.query.order_by(Category.id).all()
+              categories = [category.format() for category in collection]
+              # print(f'Q => {categories}, P => {previous_questions}')
+              for category in categories:
+                  if (category['type'] == quiz_category):
+                      # print(f'Q => {category}')
+                      category_id = category['id']
+              
+              # print(f'C_id => {category_id}')
+              questions = Question.query.filter(
+                Question.category == str(category_id))\
+                  .order_by(Question.id).all()
+              # print(f'Question => {questions}') #The issue is here: Resolved with Ok! Good to go!
 
+              if len(questions) == 0:
+                  data = {
+                      'success': True,
+                      'question': False
+                  }
+          questions = [question.format() for question in questions]
+
+          randomIndex = random.randint(0, len(questions))
+
+          if len(questions) <= randomIndex:
+              return jsonify({
+                'success': True,
+                'problem': False
+              })
+                # here is the problem
+
+          if len(previous_questions) != 0:
+              if len(previous_questions) == 5:
+                  return False
+              question = questions[randomIndex]
+              while question['id'] in previous_questions:
+                  randomIndex = random.randint(0, len(questions))
+                  
+          if randomIndex != -1:
+              q = questions[randomIndex]
+              quiz_id = q['id']
+              previous_questions.append(quiz_id)
+              question = questions[randomIndex]
+          else:
+              question = False
+          data = {
+              'success': True,
+              'quiz_category': quiz_category,
+              'previous_questions': previous_questions,
+              'question': question
+          }
+          try:
+              return jsonify(data)
+          except TypeError:
+              abort(500)
+      except:
+          abort(400) # there go the code, 
+    
   
   '''
   @TODO: 

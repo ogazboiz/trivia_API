@@ -135,22 +135,22 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(question, None)
 
     def test_play_quiz_game(self):
-        response = self.client.post('/quizzes',
-             json={
-            'previous_questions': [20, 21],
-            'quiz_category': {'type': 'Science', 'id': '1'}
-            }
-            )
+        response = self.client.post('/quizzes', json={
+            "quiz_category": {
+                "type": "Science",
+                "id": "1"
+            },
+            "previous_questions": []
+        }) 
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['question'])
-        self.assertEqual(data['question']['category'], 1)
-        self.assertNotEqual(data['question']['id'], 20)
-        self.assertNotEqual(data['question']['id'], 21)
+        self.assertTrue(len(data['question']['category']))
 
     def test_play_quiz_fails(self):
-        response = self.client.post('/quizzes', json={})
+        response = self.client.post('/quizzes') 
+
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(data['success'], False)

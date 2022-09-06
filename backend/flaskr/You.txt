@@ -1,0 +1,9 @@
+The endpoint must returns random number and this number must not be in the previous numbers
+
+
+ I want to make sure the quizzes endpoint is giving me the expected result first
+ it working now, You haven't populated your trivia_test.categories table: So, science wasn't found in it
+ i connected to trivia not trivia_testCool
+ but now is working
+
+
